@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #define MAX_ACCOUNTS 100
 
 struct clientData
@@ -14,7 +13,6 @@ struct clientData
     double balance;
 };
 
-// Function Prototypes
 unsigned int enterChoice(void);
 void initializeFile(FILE *fPtr);
 void createAccount(FILE *fPtr);
@@ -27,7 +25,6 @@ void writeHistory(unsigned int accNo, char action[], double amount);
 void showHistory(unsigned int accNo);
 void checkBalance(FILE *fPtr);
 
-// -------------------- MAIN --------------------
 int main()
 {
     FILE *cfPtr;
@@ -96,11 +93,9 @@ int main()
     return 0;
 }
 
-// -------------------- MENU --------------------
 unsigned int enterChoice(void)
 {
     unsigned int choice;
-
     printf("\n===== JOINT BANK MANAGEMENT SYSTEM =====\n");
     printf("1 - Create Account\n");
     printf("2 - Deposit Money\n");
@@ -111,40 +106,31 @@ unsigned int enterChoice(void)
     printf("7 - Check Balance\n");
     printf("8 - Exit\n");
     printf("Enter your choice: ");
-
     scanf("%u", &choice);
-
     return choice;
 }
 
-// -------------------- INITIALIZE FILE --------------------
 void initializeFile(FILE *fPtr)
 {
     struct clientData blank = {0, "", "", "", "", 0.0};
-
     rewind(fPtr);
-
     for (int i = 0; i < MAX_ACCOUNTS; i++)
     {
         fwrite(&blank, sizeof(struct clientData), 1, fPtr);
     }
 }
 
-// -------------------- CREATE ACCOUNT --------------------
 void createAccount(FILE *fPtr)
 {
     unsigned int account;
     struct clientData client;
-
     printf("Enter account number (1-100): ");
     scanf("%u", &account);
-
     if (account < 1 || account > MAX_ACCOUNTS)
     {
         printf("Invalid account number.\n");
         return;
     }
-
     fseek(fPtr,
           (account - 1) * sizeof(struct clientData),
           SEEK_SET);
@@ -153,7 +139,6 @@ void createAccount(FILE *fPtr)
           sizeof(struct clientData),
           1,
           fPtr);
-
     if (client.acctNum != 0)
     {
         printf("Account already exists.\n");
@@ -164,42 +149,32 @@ void createAccount(FILE *fPtr)
 
     printf("Enter first name: ");
     scanf("%19s", client.firstName);
-
     printf("Enter last name: ");
     scanf("%19s", client.lastName);
-
     printf("Enter joint account holder name: ");
     scanf("%19s", client.jointName);
-
     printf("Create password: ");
     scanf("%19s", client.password);
-
     printf("Enter initial balance: ");
     scanf("%lf", &client.balance);
-
     fseek(fPtr,
           (account - 1) * sizeof(struct clientData),
           SEEK_SET);
-
     fwrite(&client,
            sizeof(struct clientData),
            1,
            fPtr);
-
     writeHistory(account, "Account Created", client.balance);
 
     printf("Account created successfully.\n");
 }
 
-// -------------------- LOGIN --------------------
 int login(FILE *fPtr, struct clientData *client)
 {
     unsigned int account;
     char password[20];
-
     printf("Enter account number: ");
     scanf("%u", &account);
-
     printf("Enter password: ");
     scanf("%19s", password);
 
@@ -208,32 +183,26 @@ int login(FILE *fPtr, struct clientData *client)
         printf("Invalid account number.\n");
         return 0;
     }
-
     fseek(fPtr,
           (account - 1) * sizeof(struct clientData),
           SEEK_SET);
-
     fread(client,
           sizeof(struct clientData),
           1,
           fPtr);
-
     if (client->acctNum == 0)
     {
         printf("Account does not exist.\n");
         return 0;
     }
-
     if (strcmp(client->password, password) != 0)
     {
         printf("Wrong password.\n");
         return 0;
     }
-
     return 1;
 }
 
-// -------------------- DEPOSIT --------------------
 void depositRecord(FILE *fPtr)
 {
     struct clientData client;
@@ -245,7 +214,6 @@ void depositRecord(FILE *fPtr)
     }
 
     printf("Current Balance: %.2f\n", client.balance);
-
     printf("Enter deposit amount: ");
     scanf("%lf", &amount);
 
@@ -261,12 +229,10 @@ void depositRecord(FILE *fPtr)
            fPtr);
 
     writeHistory(client.acctNum, "Deposit", amount);
-
     printf("Deposit successful.\n");
     printf("New Balance: %.2f\n", client.balance);
 }
 
-// -------------------- WITHDRAW --------------------
 void withdrawRecord(FILE *fPtr)
 {
     struct clientData client;
@@ -305,7 +271,6 @@ void withdrawRecord(FILE *fPtr)
     printf("Remaining Balance: %.2f\n", client.balance);
 }
 
-// -------------------- DISPLAY ACCOUNTS --------------------
 void displayAccounts(FILE *fPtr)
 {
     struct clientData client;
@@ -336,7 +301,6 @@ void displayAccounts(FILE *fPtr)
     }
 }
 
-// -------------------- DELETE ACCOUNT --------------------
 void deleteRecord(FILE *fPtr)
 {
     struct clientData client;
@@ -361,7 +325,6 @@ void deleteRecord(FILE *fPtr)
     printf("Account deleted successfully.\n");
 }
 
-// -------------------- WRITE HISTORY --------------------
 void writeHistory(unsigned int accNo, char action[], double amount)
 {
     FILE *historyPtr;
@@ -382,8 +345,6 @@ void writeHistory(unsigned int accNo, char action[], double amount)
 
     fclose(historyPtr);
 }
-
-// -------------------- CHECK BALANCE --------------------
 void checkBalance(FILE *fPtr)
 {
     struct clientData client;
@@ -401,8 +362,6 @@ void checkBalance(FILE *fPtr)
     printf("Joint Holder   : %s", client.jointName);
     printf("Current Balance: %.2f", client.balance);
 }
-
-// -------------------- SHOW HISTORY --------------------
 void showHistory(unsigned int accNo)
 {
     FILE *historyPtr;
@@ -419,7 +378,7 @@ void showHistory(unsigned int accNo)
 
     sprintf(search, "Account No: %u", accNo);
 
-    printf("\n===== TRANSACTION HISTORY =====\n");
+    printf("\n---- TRANSACTION HISTORY ----\n");
 
     while (fgets(line, sizeof(line), historyPtr) != NULL)
     {
